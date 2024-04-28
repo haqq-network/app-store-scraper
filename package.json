@@ -1,5 +1,5 @@
 {
-  "name": "@haqqjs/app-store-scraper",
+  "name": "haqq-app-store-scraper",
   "version": "0.18.1",
   "description": "scrape data from the itunes app store",
   "main": "index.js",
