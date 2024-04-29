@@ -13,20 +13,21 @@ const methods = {
   suggest: require('./lib/suggest'),
   similar: require('./lib/similar'),
   reviews: require('./lib/reviews'),
-  ratings: require('./lib/ratings'),
+  ratings: require('./lib/ratings')
 };
 
-function memoized(opts) {
+function memoized (opts) {
   const cacheOpts = Object.assign(
     {
       primitive: true,
       normalizer: JSON.stringify,
       maxAge: 1000 * 60 * 5, // cache for 5 minutes
-      max: 1000, // save up to 1k results to avoid memory issues
+      max: 1000 // save up to 1k results to avoid memory issues
     },
-    opts,
+    opts
   );
   const doMemoize = (fn) => memoizee(fn, cacheOpts);
+
   return Object.assign({}, constants, map(doMemoize, methods));
 }
 
