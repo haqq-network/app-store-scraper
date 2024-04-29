@@ -14,8 +14,8 @@ function parseXML(string: string) {
   });
 }
 
-function extractSuggestions(xml) {
-  const toJSON = (item) => ({
+function extractSuggestions(xml:any) {
+  const toJSON = (item:any) => ({
     term: item.string[0],
   });
 
@@ -26,21 +26,23 @@ function extractSuggestions(xml) {
 
 // TODO see language Accept-Language: en-us, en;q=0.50
 
-export async function suggest(opts) {
-  return new Promise(function (resolve) {
-    if (!opts && !opts.term) {
-      throw Error('term missing');
-    }
+export default async function suggest(opts:any) {
+  if (!opts || !opts.term) {
+    throw new Error('term missing');
+  }
 
-    return resolve(BASE_URL + encodeURIComponent(opts.term));
-  })
-    .then((url) =>
-      doRequest(
-        url as string,
-        { 'X-Apple-Store-Front': `${storeId(opts.country)},29` },
-        opts.requestOptions,
-      ),
-    )
-    .then(parseXML)
-    .then(extractSuggestions);
+  try {
+    const baseUrl = BASE_URL + encodeURIComponent(opts.term);
+    const storeFrontHeader = { 'X-Apple-Store-Front': `${storeId(opts.country)},29` };
+
+    const url = await Promise.resolve(baseUrl); // Resolve the base URL asynchronously
+
+    const response = await doRequest(url, storeFrontHeader, opts.requestOptions);
+    const parsedData = await parseXML(response);
+    const suggestions = await extractSuggestions(parsedData);
+
+    return suggestions;
+  } catch (error) {
+    throw error; // Re-throw any caught error for consistent error propagation
+  }
 }

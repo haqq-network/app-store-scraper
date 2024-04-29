@@ -98,8 +98,12 @@ export const SORT = {
   HELPFUL: 'mostHelpful',
 };
 
+interface MarketCodes {
+  [key: string]: number; // Indicates that any string key will return a number value
+}
+
 // From https://github.com/gonzoua/random-stuff/blob/master/appstorereviews.rb
-export const MARKET_CODES = {
+export const MARKET_CODES: MarketCodes = {
   DZ: 143563,
   AO: 143564,
   AI: 143538,

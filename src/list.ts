@@ -2,23 +2,22 @@ import * as R from 'ramda';
 import { doRequest, lookup, storeId } from './common';
 import { CATEGORY, COLLECTION } from './constants';
 
-function parseLink(app) {
+function parseLink(app:any) {
   if (app.link) {
     const linkArray = Array.isArray(app.link) ? app.link : [app.link];
-    const link = linkArray.find((link) => link.attributes.rel === 'alternate');
+    const link = linkArray.find(((link:any) => link.attributes.rel === 'alternate'));
+    
     return link && link.attributes.href;
   }
   return undefined;
 }
 
-function cleanApp(app) {
+function cleanApp(app:any) {
   let developerUrl, developerId;
   if (app['im:artist'].attributes) {
     developerUrl = app['im:artist'].attributes.href;
 
     if (app['im:artist'].attributes.href.includes('/id')) {
-      // some non developer urls can sneak in here
-      // e.g. href: 'https://itunes.apple.com/us/artist/sling-tv-llc/959665097?mt=8&uo=2'
       developerId = app['im:artist'].attributes.href
         .split('/id')[1]
         .split('?mt')[0];
@@ -45,13 +44,13 @@ function cleanApp(app) {
   };
 }
 
-function processResults(opts) {
-  return function (results) {
+function processResults(opts:any) {
+  return async function(results:any) {
     const apps = results.feed.entry;
 
     if (opts.fullDetail) {
-      const ids = apps.map((app) => app.id.attributes['im:id']);
-      return lookup(
+      const ids = apps.map((app:any) => app.id.attributes['im:id']);
+      return await lookup(
         ids,
         'id',
         opts.country,
@@ -65,7 +64,7 @@ function processResults(opts) {
   };
 }
 
-function validate(opts) {
+function validate(opts:any) {
   if (opts.category && !R.includes(opts.category, R.values(CATEGORY))) {
     throw Error('Invalid category ' + opts.category);
   }
@@ -83,17 +82,20 @@ function validate(opts) {
   opts.country = opts.country || 'us';
 }
 
-export function list(opts) {
-  return new Promise(function (resolve, reject) {
-    opts = R.clone(opts || {});
-    validate(opts);
-    const category = opts.category ? `/genre=${opts.category}` : '';
-    const STORE_ID = storeId(opts.country);
-    const url = `http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/${opts.collection}/${category}/limit=${opts.num}/json?s=${STORE_ID}`;
-    doRequest(url, {}, opts.requestOptions)
-      .then(JSON.parse)
-      .then(processResults(opts))
-      .then(resolve)
-      .catch(reject);
-  });
+export default async function list(opts:any) {
+  opts = R.clone(opts || {});
+  validate(opts);
+  const category = opts.category ? `/genre=${opts.category}` : '';
+  const STORE_ID = storeId(opts.country);
+  const url = `http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/${opts.collection}/${category}/limit=${opts.num}/json?s=${STORE_ID}`;
+
+  try {
+    const response = await doRequest(url, {}, opts.requestOptions);
+    const results = await response.json();
+    const processedResults = await processResults(opts)(results);
+    
+    return processedResults;
+  } catch (error) {
+    throw error;
+  }
 }

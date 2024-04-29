@@ -9,16 +9,16 @@ import {
   LOOKUP_URL,
   MARKET_CODES,
   SORT,
-} from './src/constants.ts';
-import { app } from './src/app.ts';
-import { list } from './src/list.ts';
-import { search } from './src/search.ts';
-import { developer } from './src/developer.ts';
-import { privacy } from './src/privacy.ts';
-import { suggest } from './src/suggest.ts';
-import { similar } from './src/similar.ts';
-import { reviews } from './src/reviews.ts';
-import { ratings } from './src/ratings.ts';
+} from './src/constants';
+import list from './src/list';
+import developer from './src/developer';
+import privacy from './src/privacy';
+import suggest from './src/suggest';
+import similar from './src/similar';
+import reviews from './src/reviews';
+import ratings from './src/ratings';
+import app from './src/app';
+import search from './src/search';
 
 const cacheOpts = {
   primitive: true,
@@ -51,14 +51,16 @@ const constants = {
   SORT,
 };
 
-const doMemoize = (fn) => memoizee(fn, cacheOpts);
+const doMemoize = (fn: any) => memoizee(fn, cacheOpts);
 
 const memoizedMethods = Object.fromEntries(
   Object.entries(methods).map(([key, fn]) => [key, doMemoize(fn)]),
 );
 
-export const store = {
-  memoized: memoizedMethods,
-  ...constants,
-  ...methods,
-};
+const kek = Object.assign({ memoizedMethods }, constants, methods);
+
+export default kek;
+
+// // module.exports = Object.assign({ memoizedMethods }, constants, methods);
+
+// console.log('Hello world!');

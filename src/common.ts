@@ -1,9 +1,10 @@
-import got, { Response } from 'got';
-import throttled from 'throttled-request';
-import debug from 'debug';
+// import got from 'got';
+// import debug from 'debug';
+import axios from 'axios';
 import { DEFAULT_STORE, LOOKUP_URL, MARKET_CODES } from './constants';
+import { json } from 'stream/consumers';
 
-export function cleanApp(app) {
+export function cleanApp(app: any) {
   return {
     id: app.trackId,
     appId: app.bundleId,
@@ -41,65 +42,81 @@ export function cleanApp(app) {
   };
 }
 
-export const doRequest = (
+export async function doRequest(
   url: string,
   headers: Record<string, any>,
   requestOptions: Record<string, any>,
   limit?: number,
-) =>
-  new Promise<string>((resolve, reject) => {
-    // debug('Making request: %s %j %o', url, headers, requestOptions);
+): Promise<any> {
+  try {
+    const options = {
+      headers,
+      ...requestOptions,
+    };
 
-    requestOptions = Object.assign({ method: 'GET' }, requestOptions);
+    // Make the request using `got` library and await the response
+    const { data }: any = await axios.get(url, options);
 
-    let req: typeof got = got;
-    if (limit) {
-      throttled.configure({
-        requests: limit,
-        milliseconds: 1000,
-      });
-      req = throttled;
+    // Check response status code
+    if (data.statusCode >= 400) {
+      throw new Error('Request failed with status ' + data.statusCode);
     }
 
-    req(Object.assign({ url, headers }, requestOptions))
-      .then((response: Response<string>) => {
-        if (response.statusCode >= 400) {
-          // debug('Request error', response.body);
-          reject({ response });
-        } else {
-          debug('Finished request');
-          resolve(response.body);
-        }
-      })
-      .catch((error: Error) => {
-        // debug('Request error', error);
-        reject(error);
-      });
-  });
+    // Request successful, return response body
+    console.log('Finished request');
 
-export function lookup(ids, idField, country, lang, requestOptions, limit) {
+    return data;
+  } catch (error) {
+    // Handle any errors during request
+    console.error('Request error:', error);
+    throw error; // Rethrow the error to the caller
+  }
+}
+
+export async function lookup(
+  ids: any,
+  idField: any,
+  country: any,
+  lang: any,
+  requestOptions: any,
+  limit: any,
+) {
   idField = idField || 'id';
   country = country || 'us';
   const langParam = lang ? `&lang=${lang}` : '';
   const joinedIds = ids.join(',');
   const url = `${LOOKUP_URL}?${idField}=${joinedIds}&country=${country}&entity=software${langParam}`;
-  return doRequest(url, {}, requestOptions, limit)
-    .then(JSON.parse)
-    .then((res) =>
-      res.results.filter(function (app) {
-        return (
-          typeof app.wrapperType === 'undefined' ||
-          app.wrapperType === 'software'
-        );
-      }),
-    )
-    .then((res) => res.map(cleanApp));
+
+  try {
+    const response = await doRequest(url, {}, requestOptions, limit);
+    // const parsedResponse = JSON.parse(response.results[0]);
+    const filteredResults = response.results.filter((app: any) => {
+      return (
+        typeof app.wrapperType === 'undefined' || app.wrapperType === 'software'
+      );
+    });
+    // console.log('AJSDJHGAJSHDHJ', { filteredResults });
+    const cleanedApps = filteredResults.map((app: any) => cleanApp(app));
+
+    return cleanedApps;
+  } catch (error: any) {
+    throw new Error(`Lookup failed: ${error.message}`);
+  }
 }
 
-export function storeId(countryCode: string) {
-  return (
-    (countryCode && MARKET_CODES[countryCode.toUpperCase()]) || DEFAULT_STORE
-  );
+export function storeId(countryCode: string): number | '143441' {
+  const upperCaseCountryCode = countryCode.toUpperCase();
+
+  // Check if countryCode exists in MARKET_CODES
+  if (upperCaseCountryCode in MARKET_CODES) {
+    return MARKET_CODES[upperCaseCountryCode]; // Return corresponding store ID
+  } else {
+    return DEFAULT_STORE; // Return default store ID if countryCode not found
+  }
 }
+
+const govno = Object.assign({ lookup, cleanApp, doRequest, storeId });
+
+export default govno;
 
 // module.exports = { cleanApp, lookup, request: doRequest, storeId };

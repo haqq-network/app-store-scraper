@@ -1,15 +1,18 @@
-import { lookup } from './common';
-import { ratings } from './ratings';
+import govno from './common';
+import ratings from './ratings';
 
-export function app(opts) {
-  return new Promise(function (resolve) {
-    if (!opts.id && !opts.appId) {
-      throw Error('Either id or appId is required');
-    }
-    const idField = opts.id ? 'id' : 'bundleId';
-    const idValue = opts.id || opts.appId;
-    resolve(
-      lookup(
+export default async function app(opts: any) {
+  if (!opts.id && !opts.appId) {
+    throw new Error('Either id or appId is required');
+  }
+
+  const idField = opts.id ? 'id' : 'bundleId';
+  const idValue = opts.id || opts.appId;
+
+  try {
+    // Performing lookup and optionally ratings concurrently using Promise.all
+    const [lookupResult] = await Promise.all([
+      govno.lookup(
         [idValue],
         idField,
         opts.country,
@@ -17,23 +20,25 @@ export function app(opts) {
         opts.requestOptions,
         opts.throttle,
       ),
-    );
-  }).then((results) => {
-    if ((results as any[]).length === 0) {
-      throw Error('App not found (404)');
+      opts.ratings ? ratings(opts) : Promise.resolve(null), // Execute ratings only if opts.ratings is true
+    ]);
+
+    if (lookupResult.length === 0) {
+      throw new Error('App not found (404)');
     }
 
-    const result = (results as any[])[0];
+    const result = lookupResult[0];
 
-    if (opts.ratings) {
+    // Merge ratings result into the app result if opts.ratings is true
+    if (opts.ratings && result) {
       if (!opts.id) {
         opts.id = result.id;
       }
-      return ratings(opts).then((ratingsResult) =>
-        Object.assign({}, result, ratingsResult),
-      );
+      return { ...result, ...lookupResult[1] }; // Assuming ratingsResult is lookupResult[1]
     }
 
     return result;
-  });
+  } catch (error) {
+    throw error;
+  }
 }

@@ -2,10 +2,11 @@
   "name": "haqq-app-store-scraper",
   "version": "0.18.1",
   "description": "scrape data from the itunes app store",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "mocha --timeout 8000",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start": "ts-node index.ts"
   },
   "repository": {
     "type": "git",
@@ -24,20 +25,20 @@
   },
   "homepage": "https://github.com/haqq-network/app-store-scraper#readme",
   "dependencies": {
-    "@types/memoizee": "^0.4.11",
-    "@types/ramda": "^0.29.12",
-    "@types/xml2js": "^0.4.14",
+    "axios": "^1.6.8",
     "cheerio": "^1.0.0-rc.2",
     "debug": "^2.2.0",
     "got": "^14.2.1",
     "memoizee": "^0.4.15",
-    "prettier": "^3.2.5",
     "ramda": "^0.29.0",
-    "throttled-request": "^0.1.1",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
+    "@types/memoizee": "^0.4.11",
+    "@types/node": "^20.12.7",
+    "@types/ramda": "^0.29.12",
+    "@types/xml2js": "^0.4.14",
     "chai": "^4.3.8",
     "eslint": "^8.49.0",
     "eslint-config-semistandard": "^6.0.1",
@@ -45,6 +46,8 @@
     "eslint-plugin-promise": "^1.1.0",
     "eslint-plugin-standard": "^4.0.1",
     "mocha": "^10.2.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5",
     "validator": "^13.11.0"
   }
 }

@@ -1,39 +1,37 @@
 import * as cheerio from 'cheerio';
 import { doRequest, storeId } from './common';
 
-export async function ratings(opts: {
+export default async function ratings(opts: {
   id: any;
   country: string;
   requestOptions: Record<string, any>;
 }) {
-  return new Promise(function (resolve) {
-    if (!opts.id) {
-      throw Error('id is required');
-    }
+  if (!opts.id) {
+    throw new Error('id is required');
+  }
 
-    const country = opts.country || 'us';
-    const storeFront = storeId(opts.country);
-    const idValue = opts.id;
-    const url = `https://itunes.apple.com/${country}/customer-reviews/id${idValue}?displayable-kind=11`;
+  const country = opts.country || 'us';
+  const storeFront = storeId(opts.country);
+  const idValue = opts.id;
+  const url = `https://itunes.apple.com/${country}/customer-reviews/id${idValue}?displayable-kind=11`;
 
-    resolve(
-      doRequest(
-        url,
-        {
-          'X-Apple-Store-Front': `${storeFront},12`,
-        },
-        opts.requestOptions,
-      ),
+  try {
+    const html = await doRequest(
+      url,
+      {
+        'X-Apple-Store-Front': `${storeFront},12`,
+      },
+      opts.requestOptions,
     );
-  }).then((html: unknown) => {
-    const parsedHtml = html as string;
 
-    if (parsedHtml.length === 0) {
-      throw Error('App not found (404)');
+    if (typeof html !== 'string' || html.length === 0) {
+      throw new Error('App not found (404)');
     }
 
-    return parseRatings(parsedHtml);
-  });
+    return parseRatings(html);
+  } catch (error) {
+    throw error; // Re-throwing the error for the caller to handle
+  }
 }
 
 function parseRatings(html: string) {
@@ -44,7 +42,7 @@ function parseRatings(html: string) {
     .map((i, el) => parseInt($(el).text()))
     .get();
   const histogram = ratingsByStar.reduce((acc, ratingsForStar, index) => {
-    return Object.assign(acc, { [5 - index]: ratingsForStar });
+    return { ...acc, [5 - index]: ratingsForStar };
   }, {});
 
   return { ratings, histogram };

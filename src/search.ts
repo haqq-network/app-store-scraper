@@ -11,7 +11,7 @@ function paginate(num: number, page: number) {
   return R.slice(pageStart, pageEnd);
 }
 
-export function search(opts) {
+export default async function search(opts:any) {
   return new Promise(function (resolve, reject) {
     if (!opts.term) {
       throw Error('term is required');

@@ -1,9 +1,9 @@
 import * as R from 'ramda';
 import { doRequest } from './common';
 import { SORT } from './constants';
-import { app } from './app';
+import app from './app';
 
-function ensureArray(value) {
+function ensureArray(value:any) {
   if (!value) {
     return [];
   }
@@ -15,7 +15,7 @@ function ensureArray(value) {
   return [value];
 }
 
-function cleanList(results) {
+function cleanList(results:any) {
   const reviews = ensureArray(results.feed.entry);
 
   return reviews.map((review) => ({
@@ -31,31 +31,36 @@ function cleanList(results) {
   }));
 }
 
-export const reviews = (opts) =>
-  new Promise((resolve) => {
-    validate(opts);
+export default async function reviews(opts:any) {
+  validate(opts);
 
-    if (opts.id) {
-      resolve(opts.id);
-    } else if (opts.appId) {
-      resolve(app(opts).then((app) => app.id));
-    }
-  })
-    .then((id) => {
-      opts = opts || {};
-      opts.sort = opts.sort || SORT.RECENT;
-      opts.page = opts.page || 1;
-      opts.country = opts.country || 'us';
+  let id;
+  if (opts.id) {
+    id = opts.id;
+  } else if (opts.appId) {
+    const appInfo = await app(opts);
+    id = appInfo.id;
+  }
 
-      const url = `https://itunes.apple.com/${opts.country}/rss/customerreviews/page=${opts.page}/id=${id}/sortby=${opts.sort}/json`;
-      return doRequest(url, {}, opts.requestOptions);
-    })
-    .then(JSON.parse)
-    .then(cleanList);
+  opts = opts || {};
+  opts.sort = opts.sort || SORT.RECENT;
+  opts.page = opts.page || 1;
+  opts.country = opts.country || 'us';
 
-function validate(opts) {
+  const url = `https://itunes.apple.com/${opts.country}/rss/customerreviews/page=${opts.page}/id=${id}/sortby=${opts.sort}/json`;
+  
+  try {
+    const response = await doRequest(url, {}, opts.requestOptions);
+    const parsedResponse = JSON.parse(response);
+    return cleanList(parsedResponse);
+  } catch (error:any) {
+    throw new Error(`Error fetching reviews: ${error.message}`);
+  }
+};
+
+function validate(opts:any) {
   if (!opts.id && !opts.appId) {
-    throw Error('Either id or appId is required');
+    throw new Error('Either id or appId is required');
   }
 
   if (opts.sort && !R.includes(opts.sort, R.values(SORT))) {
