@@ -1,6 +1,4 @@
-'use strict';
-
-const collection = {
+export const COLLECTION = {
   TOP_MAC: 'topmacapps',
   TOP_FREE_MAC: 'topfreemacapps',
   TOP_GROSSING_MAC: 'topgrossingmacapps',
@@ -13,10 +11,10 @@ const collection = {
   TOP_GROSSING_IOS: 'topgrossingapplications',
   TOP_GROSSING_IPAD: 'topgrossingipadapplications',
   TOP_PAID_IOS: 'toppaidapplications',
-  TOP_PAID_IPAD: 'toppaidipadapplications'
+  TOP_PAID_IPAD: 'toppaidipadapplications',
 };
 
-const category = {
+export const CATEGORY = {
   BOOKS: 6018,
   BUSINESS: 6000,
   CATALOGS: 6022,
@@ -86,22 +84,22 @@ const category = {
   SPORTS: 6004,
   TRAVEL: 6003,
   UTILITIES: 6002,
-  WEATHER: 6001
+  WEATHER: 6001,
 };
 
-const device = {
+export const DEVICE = {
   IPAD: 'iPadSoftware',
   MAC: 'macSoftware',
-  ALL: 'software'
+  ALL: 'software',
 };
 
-const sort = {
+export const SORT = {
   RECENT: 'mostRecent',
-  HELPFUL: 'mostHelpful'
+  HELPFUL: 'mostHelpful',
 };
 
 // From https://github.com/gonzoua/random-stuff/blob/master/appstorereviews.rb
-const markets = {
+export const MARKET_CODES = {
   DZ: 143563,
   AO: 143564,
   AI: 143538,
@@ -216,7 +214,11 @@ const markets = {
   UZ: 143566,
   VE: 143502,
   VN: 143471,
-  YE: 143571
+  YE: 143571,
 };
 
-module.exports = {collection, category, device, sort, markets};
+export const DEFAULT_STORE = '143441';
+export const LOOKUP_URL = 'https://itunes.apple.com/lookup';
+export const BASE_ID_URL = 'https://itunes.apple.com/us/app/app/id';
+export const BASE_URL =
+  'https://search.itunes.apple.com/WebObjects/MZSearchHints.woa/wa/hints?clientApplication=Software&term=';
