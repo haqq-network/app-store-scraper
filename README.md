@@ -7,7 +7,7 @@ The goal is to provide an interface as close as possible to the
 ## Installation
 
 ```
-npm install app-store-scraper
+npm i @haqq/app-store-scraper
 ```
 
 ## Usage
