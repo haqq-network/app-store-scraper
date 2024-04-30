@@ -1,7 +1,9 @@
 {
   "name": "@haqq/app-store-scraper",
   "version": "0.19.0",
-  "description": "scrape data from the itunes app store",
+  "license": "MIT",
+  "description": "Scrape data from the itunes app store",
+  "homepage": "https://github.com/haqq-network/app-store-scraper#readme",
   "source": "src/index.ts",
   "main": "dist/main.js",
   "module": "dist/module.js",
@@ -15,25 +17,22 @@
     "install:husky": "husky || true",
     "prepare": "yarn install:husky",
     "postinstall": "yarn prepare",
-    "prepack": "pinst --disable",
-    "postpack": "pinst --enable"
+    "prepack": "yarn pinst --disable",
+    "postpack": "yarn pinst --enable"
   },
+  "keywords": [
+    "mac",
+    "app store",
+    "itunes",
+    "scraper"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/haqq-network/app-store-scraper.git"
   },
-  "keywords": [
-    "mac",
-    "app",
-    "store",
-    "itunes",
-    "scraper"
-  ],
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/haqq-network/app-store-scraper/issues"
   },
-  "homepage": "https://github.com/haqq-network/app-store-scraper#readme",
   "dependencies": {
     "axios": "1.6.8",
     "cheerio": "1.0.0-rc.12",

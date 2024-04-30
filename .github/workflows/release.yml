@@ -1,0 +1,48 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Type of release (major, minor, patch)'
+        required: true
+        default: 'patch'
+
+env:
+  HUSKY: 0
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build package
+        run: yarn build
+
+      - name: Print npm packed tarball info
+        run: npm pack --dry-run
+
+      # - name: Configure bot
+      #   run: |
+      #     git config user.name ${{ secrets.GITHUB_BOT_USERNAME }}
+      #     git config user.email ${{ secrets.GITHUB_BOT_EMAIL }}
+      #     git remote set-url origin https://${{ secrets.GITHUB_BOT_TOKEN }}@github.com/haqq-network/app-store-scraper.git
+
+      - name: Release
+        run: yarn semantic-release --release-type ${{ github.event.inputs.releaseType }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
