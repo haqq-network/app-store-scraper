@@ -11,7 +11,12 @@
     "build": "yarn parcel build",
     "test": "yarn ts-node test",
     "lint": "yarn eslint",
-    "format": "yarn prettier --write '**/*.{ts,js,tsx,jsx,cjs,mjs,css,json,md,mdx,html,yaml,yml}'"
+    "format": "yarn prettier --write '**/*.{ts,js,tsx,jsx,cjs,mjs,css,json,md,mdx,html,yaml,yml}'",
+    "install:husky": "husky || true",
+    "prepare": "yarn install:husky",
+    "postinstall": "yarn prepare",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable"
   },
   "repository": {
     "type": "git",
@@ -33,13 +38,16 @@
     "axios": "1.6.8",
     "cheerio": "1.0.0-rc.12",
     "got": "14.2.1",
-    "ramda": "0.29.0",
+    "ramda": "0.30.0",
     "xml2js": "0.6.2"
   },
   "devDependencies": {
     "@eslint/js": "9.1.1",
     "@parcel/packager-ts": "2.12.0",
     "@parcel/transformer-typescript-types": "2.12.0",
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/npm": "12.0.0",
     "@types/cheerio": "0.22.35",
     "@types/node": "20.12.7",
     "@types/ramda": "0.29.12",
@@ -47,8 +55,12 @@
     "eslint": "9.1.1",
     "eslint-config-prettier": "9.1.0",
     "globals": "15.1.0",
+    "husky": "9.0.11",
+    "lint-staged": "15.2.2",
     "parcel": "2.12.0",
+    "pinst": "3.0.0",
     "prettier": "3.2.5",
+    "semantic-release": "23.0.8",
     "ts-node": "10.9.2",
     "typescript": "5.4.5",
     "typescript-eslint": "7.8.0"
