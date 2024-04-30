@@ -3,7 +3,7 @@ import { doRequest } from './common';
 import { SORT } from './constants';
 import app from './app';
 
-function ensureArray(value:any) {
+function ensureArray(value: any) {
   if (!value) {
     return [];
   }
@@ -15,7 +15,7 @@ function ensureArray(value:any) {
   return [value];
 }
 
-function cleanList(results:any) {
+function cleanList(results: any) {
   const reviews = ensureArray(results.feed.entry);
 
   return reviews.map((review) => ({
@@ -31,7 +31,7 @@ function cleanList(results:any) {
   }));
 }
 
-export default async function reviews(opts:any) {
+export default async function reviews(opts: any) {
   validate(opts);
 
   let id;
@@ -48,17 +48,17 @@ export default async function reviews(opts:any) {
   opts.country = opts.country || 'us';
 
   const url = `https://itunes.apple.com/${opts.country}/rss/customerreviews/page=${opts.page}/id=${id}/sortby=${opts.sort}/json`;
-  
+
   try {
     const response = await doRequest(url, {}, opts.requestOptions);
     const parsedResponse = JSON.parse(response);
     return cleanList(parsedResponse);
-  } catch (error:any) {
+  } catch (error: any) {
     throw new Error(`Error fetching reviews: ${error.message}`);
   }
-};
+}
 
-function validate(opts:any) {
+function validate(opts: any) {
   if (!opts.id && !opts.appId) {
     throw new Error('Either id or appId is required');
   }

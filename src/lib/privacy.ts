@@ -1,6 +1,6 @@
 import { doRequest } from './common';
 
-export default async function privacy(opts:any) {
+export default async function privacy(opts: any) {
   try {
     opts.country = opts.country || 'US';
 

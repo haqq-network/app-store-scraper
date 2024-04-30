@@ -1,18 +1,20 @@
-import * as R from 'ramda';
+import R from 'ramda';
 import { doRequest, lookup, storeId } from './common';
 import { CATEGORY, COLLECTION } from './constants';
 
-function parseLink(app:any) {
+function parseLink(app: any) {
   if (app.link) {
     const linkArray = Array.isArray(app.link) ? app.link : [app.link];
-    const link = linkArray.find(((link:any) => link.attributes.rel === 'alternate'));
-    
+    const link = linkArray.find(
+      (link: any) => link.attributes.rel === 'alternate',
+    );
+
     return link && link.attributes.href;
   }
   return undefined;
 }
 
-function cleanApp(app:any) {
+function cleanApp(app: any) {
   let developerUrl, developerId;
   if (app['im:artist'].attributes) {
     developerUrl = app['im:artist'].attributes.href;
@@ -44,12 +46,12 @@ function cleanApp(app:any) {
   };
 }
 
-function processResults(opts:any) {
-  return async function(results:any) {
+function processResults(opts: any) {
+  return async function (results: any) {
     const apps = results.feed.entry;
 
     if (opts.fullDetail) {
-      const ids = apps.map((app:any) => app.id.attributes['im:id']);
+      const ids = apps.map((app: any) => app.id.attributes['im:id']);
       return await lookup(
         ids,
         'id',
@@ -64,7 +66,7 @@ function processResults(opts:any) {
   };
 }
 
-function validate(opts:any) {
+function validate(opts: any) {
   if (opts.category && !R.includes(opts.category, R.values(CATEGORY))) {
     throw Error('Invalid category ' + opts.category);
   }
@@ -82,7 +84,7 @@ function validate(opts:any) {
   opts.country = opts.country || 'us';
 }
 
-export default async function list(opts:any) {
+export default async function list(opts: any) {
   opts = R.clone(opts || {});
   validate(opts);
   const category = opts.category ? `/genre=${opts.category}` : '';
@@ -93,7 +95,7 @@ export default async function list(opts:any) {
     const response = await doRequest(url, {}, opts.requestOptions);
     const results = await response.json();
     const processedResults = await processResults(opts)(results);
-    
+
     return processedResults;
   } catch (error) {
     throw error;

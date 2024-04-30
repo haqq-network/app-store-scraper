@@ -1,6 +1,6 @@
 import { lookup } from './common';
 
-export default async function developer(opts:any) {
+export default async function developer(opts: any) {
   if (!opts.devId) {
     throw new Error('devId is required');
   }

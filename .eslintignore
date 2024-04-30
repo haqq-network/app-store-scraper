@@ -1,0 +1,4 @@
+dist/
+.old_tests/
+.parcel-cache/
+node_modules/

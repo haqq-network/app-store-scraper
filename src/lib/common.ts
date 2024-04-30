@@ -1,8 +1,5 @@
-// import got from 'got';
-// import debug from 'debug';
 import axios from 'axios';
 import { DEFAULT_STORE, LOOKUP_URL, MARKET_CODES } from './constants';
-import { json } from 'stream/consumers';
 
 export function cleanApp(app: any) {
   return {
@@ -115,8 +112,4 @@ export function storeId(countryCode: string): number | '143441' {
   }
 }
 
-const govno = Object.assign({ lookup, cleanApp, doRequest, storeId });
-
-export default govno;
-
-// module.exports = { cleanApp, lookup, request: doRequest, storeId };
+export default { lookup, cleanApp, doRequest, storeId };

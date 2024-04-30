@@ -4,7 +4,7 @@ const store = require('../index');
 const assert = require('chai').assert;
 const assertValidUrl = require('./common').assertValidUrl;
 
-function assertValid (review) {
+function assertValid(review) {
   assert.isString(review.id);
   assert(review.id);
   assert.isString(review.userName);
@@ -22,37 +22,39 @@ function assertValid (review) {
 
 describe('Reviews method', () => {
   it('should retrieve the reviews of an app', () => {
-    return store.reviews({id: '553834731'})
-      .then((reviews) => {
-        reviews.map(assertValid);
-      });
+    return store.reviews({ id: '553834731' }).then((reviews) => {
+      reviews.map(assertValid);
+    });
   });
 
   it('should validate the sort', () => {
-    return store.reviews({
-      id: '553834731',
-      sort: 'invalid'
-    })
+    return store
+      .reviews({
+        id: '553834731',
+        sort: 'invalid',
+      })
       .then(assert.fail)
       .catch((e) => assert.equal(e.message, 'Invalid sort invalid'));
   });
 
   it('should validate the page', () => {
-    return store.reviews({
-      id: '553834731',
-      page: 11
-    })
+    return store
+      .reviews({
+        id: '553834731',
+        page: 11,
+      })
       .then(assert.fail)
       .catch((e) => assert.equal(e.message, 'Page cannot be greater than 10'));
   });
 
   it('should be able to set requestOptions', (done) => {
-    store.reviews({
-      id: '553834731',
-      requestOptions: {
-        method: 'DELETE'
-      }
-    })
+    store
+      .reviews({
+        id: '553834731',
+        requestOptions: {
+          method: 'DELETE',
+        },
+      })
       .then(() => done('should not resolve'))
       .catch((err) => {
         assert.equal(err.response.statusCode, 501);

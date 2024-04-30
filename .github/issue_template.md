@@ -1,4 +1,4 @@
-<!-- 
+<!--
 1. Before filing a bug please make sure to search the open issues
 to make sure it hasn't already been reported: https://github.com/facundoolano/app-store-scraper/issues
 
@@ -6,14 +6,16 @@ to make sure it hasn't already been reported: https://github.com/facundoolano/ap
 due to changes in source pages being scraped.
 -->
 
-* Operating System:
-* Node version:
-* app-play-scraper version:
+- Operating System:
+- Node version:
+- app-play-scraper version:
 
-### Description: 
+### Description:
+
 Describe your issue here
 
 ### Example code:
+
 ```js
 // Put code to reproduce the issue here
 ```

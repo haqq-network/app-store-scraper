@@ -7,7 +7,7 @@ const config = {
   trailingComma: 'all',
   bracketSpacing: true,
   bracketSameLine: false,
-  arrowParens: 'always'
+  arrowParens: 'always',
 };
 
 module.exports = config;

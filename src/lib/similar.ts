@@ -1,9 +1,8 @@
 import app from './app';
 import { doRequest, lookup, storeId } from './common';
 import { BASE_ID_URL } from './constants';
-// import { doRequest, lookup, app } from './someModule'; // Import necessary modules
 
-export default async function similar(opts:any) {
+export default async function similar(opts: any) {
   if (!opts.id && !opts.appId) {
     throw new Error('Either id or appId is required');
   }
@@ -49,4 +48,3 @@ export default async function similar(opts:any) {
     throw error; // Re-throw any caught error for consistent error propagation
   }
 }
-
