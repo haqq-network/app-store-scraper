@@ -6,9 +6,13 @@ on:
       - master
   pull_request:
 
+env:
+  HUSKY: 0
+
 jobs:
   checks:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -20,7 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
-      - name: Setup dependencies
+      - name: Install dependencies
         run: yarn install --immutable
       # - name: Run lint
       #   run: yarn lint
