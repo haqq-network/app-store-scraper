@@ -1,9 +1,11 @@
-name: build
+name: CI
+
 on:
   push:
     branches:
       - master
   pull_request:
+
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -20,8 +22,8 @@ jobs:
           cache: yarn
       - name: Setup dependencies
         run: yarn install --immutable
-      # - name: Run lint
-      #   run: yarn lint
+      - name: Run lint
+        run: yarn lint
       - name: Run build
         run: yarn build
       - name: Run tests
