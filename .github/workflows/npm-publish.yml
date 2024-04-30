@@ -50,6 +50,6 @@ jobs:
         run: yarn build
 
       - name: Publish to NPM 🚀
-        uses: simenandre/publish-with-yarn-classic@v1
+        uses: simenandre/publish-with-yarn@v1
         with:
           npm-auth-token: ${{ secrets.NPM_TOKEN }}
