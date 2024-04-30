@@ -13,24 +13,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      - name: Use Node LTS ✨
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
-      - run: yarn test
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - name: Install dependencies 📦️
+        run: yarn install --frozen-lockfile
+
+      - name: Build 🔨
+        run: yarn build
+
+      - name: Test 🧪
+        run: yarn test
 
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      - name: Use Node LTS ✨
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
-      - run: yarn npm publish --access public
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - name: Install dependencies 📦️
+        run: yarn install --frozen-lockfile
+
+      - name: Build 🔨
+        run: yarn build
+
+      - name: Publish to npm 🚀
+        run: yarn npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
