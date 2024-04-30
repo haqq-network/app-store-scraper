@@ -1,0 +1,6 @@
+*
+!dist/**
+!src/**
+!package.json
+!readme.md
+!license
