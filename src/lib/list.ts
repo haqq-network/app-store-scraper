@@ -2,19 +2,17 @@ import * as ramda from 'ramda';
 import { doRequest, lookup, storeId } from './common';
 import { CATEGORY, COLLECTION } from './constants';
 
-function parseLink(app: any) {
+function parseLink(app: { link: string }) {
   if (app.link) {
     const linkArray = Array.isArray(app.link) ? app.link : [app.link];
-    const link = linkArray.find(
-      (link: any) => link.attributes.rel === 'alternate',
-    );
+    const link = linkArray.find((link) => link.attributes.rel === 'alternate');
 
     return link && link.attributes.href;
   }
   return undefined;
 }
 
-function cleanApp(app: any) {
+function cleanApp(app) {
   let developerUrl, developerId;
   if (app['im:artist'].attributes) {
     developerUrl = app['im:artist'].attributes.href;
@@ -46,19 +44,18 @@ function cleanApp(app: any) {
   };
 }
 
-function processResults(opts: any) {
-  return async function (results: any) {
+function processResults(opts) {
+  return async function (results) {
     const apps = results.feed.entry;
 
     if (opts.fullDetail) {
-      const ids = apps.map((app: any) => app.id.attributes['im:id']);
+      const ids = apps.map((app) => app.id.attributes['im:id']);
       return await lookup(
         ids,
         'id',
         opts.country,
         opts.lang,
         opts.requestOptions,
-        opts.throttle,
       );
     }
 
@@ -66,7 +63,7 @@ function processResults(opts: any) {
   };
 }
 
-function validate(opts: any) {
+function validate(opts) {
   if (opts.category && !ramda.includes(opts.category, ramda.values(CATEGORY))) {
     throw Error('Invalid category ' + opts.category);
   }
@@ -84,20 +81,16 @@ function validate(opts: any) {
   opts.country = opts.country || 'us';
 }
 
-export default async function list(opts: any) {
+export default async function list(opts) {
   opts = ramda.clone(opts || {});
   validate(opts);
   const category = opts.category ? `/genre=${opts.category}` : '';
   const STORE_ID = storeId(opts.country);
   const url = `http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/${opts.collection}/${category}/limit=${opts.num}/json?s=${STORE_ID}`;
 
-  try {
-    const response = await doRequest(url, {}, opts.requestOptions);
-    const results = await response.json();
-    const processedResults = await processResults(opts)(results);
+  const response = await doRequest(url, {}, opts.requestOptions);
+  const results = await response.json();
+  const processedResults = await processResults(opts)(results);
 
-    return processedResults;
-  } catch (error) {
-    throw error;
-  }
+  return processedResults;
 }

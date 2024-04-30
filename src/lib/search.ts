@@ -1,6 +1,7 @@
 import * as R from 'ramda';
 import { BASE_URL } from './constants';
 import { doRequest, lookup, storeId } from './common';
+import { SearchOptions } from '../../types';
 
 function paginate(num: number, page: number) {
   num = num || 50;
@@ -11,7 +12,7 @@ function paginate(num: number, page: number) {
   return R.slice(pageStart, pageEnd);
 }
 
-export default async function search(opts: any) {
+export default async function search(opts: SearchOptions) {
   return new Promise(function (resolve, reject) {
     if (!opts.term) {
       throw Error('term is required');
@@ -43,7 +44,6 @@ export default async function search(opts: any) {
             opts.country,
             opts.lang,
             opts.requestOptions,
-            opts.throttle,
           );
         }
         return ids;

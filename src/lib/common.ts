@@ -1,7 +1,44 @@
 import axios from 'axios';
 import { DEFAULT_STORE, LOOKUP_URL, MARKET_CODES } from './constants';
 
-export function cleanApp(app: any) {
+interface AppData {
+  trackId: number;
+  bundleId: string;
+  trackName: string;
+  trackViewUrl: string;
+  description: string;
+  artworkUrl512?: string;
+  artworkUrl100?: string;
+  artworkUrl60?: string;
+  genres: string[];
+  genreIds: string[];
+  primaryGenreName: string;
+  primaryGenreId: number;
+  contentAdvisoryRating: string;
+  languageCodesISO2A: string[];
+  fileSizeBytes: number;
+  minimumOsVersion: string;
+  releaseDate: Date;
+  currentVersionReleaseDate?: Date;
+  releaseNotes: string;
+  version: string;
+  price: number;
+  currency: string;
+  artistId: number;
+  artistName: string;
+  artistViewUrl: string;
+  sellerUrl: string;
+  averageUserRating: number;
+  userRatingCount: number;
+  averageUserRatingForCurrentVersion: number;
+  userRatingCountForCurrentVersion: number;
+  screenshotUrls: string[];
+  ipadScreenshotUrls: string[];
+  appletvScreenshotUrls: string[];
+  supportedDevices: string[];
+}
+
+export function cleanApp(app: AppData) {
   return {
     id: app.trackId,
     appId: app.bundleId,
@@ -41,10 +78,9 @@ export function cleanApp(app: any) {
 
 export async function doRequest(
   url: string,
-  headers: Record<string, any>,
-  requestOptions: Record<string, any>,
-  limit?: number,
-): Promise<any> {
+  headers: Record<string, string>,
+  requestOptions: Record<string, string>,
+) {
   try {
     const options = {
       headers,
@@ -65,17 +101,16 @@ export async function doRequest(
   } catch (error) {
     // Handle any errors during request
     console.error('Request error:', error);
-    throw error; // Rethrow the error to the caller
+    return null;
   }
 }
 
 export async function lookup(
-  ids: any,
-  idField: any,
-  country: any,
-  lang: any,
-  requestOptions: any,
-  limit: any,
+  ids: unknown[],
+  idField: string,
+  country: string,
+  lang: string | undefined,
+  requestOptions: Record<string, string>,
 ) {
   idField = idField || 'id';
   country = country || 'us';
@@ -84,23 +119,22 @@ export async function lookup(
   const url = `${LOOKUP_URL}?${idField}=${joinedIds}&country=${country}&entity=software${langParam}`;
 
   try {
-    const response = await doRequest(url, {}, requestOptions, limit);
+    const response = await doRequest(url, {}, requestOptions);
     // const parsedResponse = JSON.parse(response.results[0]);
-    const filteredResults = response.results.filter((app: any) => {
+    const filteredResults = response.results.filter((app) => {
       return (
         typeof app.wrapperType === 'undefined' || app.wrapperType === 'software'
       );
     });
-    // console.log('AJSDJHGAJSHDHJ', { filteredResults });
-    const cleanedApps = filteredResults.map((app: any) => cleanApp(app));
+    const cleanedApps = filteredResults.map((app: AppData) => cleanApp(app));
 
     return cleanedApps;
-  } catch (error: any) {
+  } catch (error) {
     throw new Error(`Lookup failed: ${error.message}`);
   }
 }
 
-export function storeId(countryCode: string): number | '143441' {
+export function storeId(countryCode: string) {
   const upperCaseCountryCode = countryCode.toUpperCase();
 
   // Check if countryCode exists in MARKET_CODES

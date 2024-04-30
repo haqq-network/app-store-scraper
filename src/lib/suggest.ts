@@ -4,7 +4,7 @@ import { doRequest, storeId } from './common';
 
 function parseXML(string: string) {
   return new Promise(function (resolve, reject) {
-    return parseString(string, (err: any, res: any) => {
+    return parseString(string, (err, res) => {
       if (err) {
         reject(err);
         return;
@@ -14,8 +14,10 @@ function parseXML(string: string) {
   });
 }
 
-function extractSuggestions(xml: any) {
-  const toJSON = (item: any) => ({
+function extractSuggestions(xml) {
+  console.log({});
+
+  const toJSON = (item) => ({
     term: item.string[0],
   });
 
@@ -26,29 +28,21 @@ function extractSuggestions(xml: any) {
 
 // TODO see language Accept-Language: en-us, en;q=0.50
 
-export default async function suggest(opts: any) {
+export default async function suggest(opts) {
   if (!opts || !opts.term) {
     throw new Error('term missing');
   }
 
-  try {
-    const baseUrl = BASE_URL + encodeURIComponent(opts.term);
-    const storeFrontHeader = {
-      'X-Apple-Store-Front': `${storeId(opts.country)},29`,
-    };
+  const baseUrl = BASE_URL + encodeURIComponent(opts.term);
+  const storeFrontHeader = {
+    'X-Apple-Store-Front': `${storeId(opts.country)},29`,
+  };
 
-    const url = await Promise.resolve(baseUrl); // Resolve the base URL asynchronously
+  const url = await Promise.resolve(baseUrl); // Resolve the base URL asynchronously
 
-    const response = await doRequest(
-      url,
-      storeFrontHeader,
-      opts.requestOptions,
-    );
-    const parsedData = await parseXML(response);
-    const suggestions = await extractSuggestions(parsedData);
+  const response = await doRequest(url, storeFrontHeader, opts.requestOptions);
+  const parsedData = await parseXML(response);
+  const suggestions = await extractSuggestions(parsedData);
 
-    return suggestions;
-  } catch (error) {
-    throw error; // Re-throw any caught error for consistent error propagation
-  }
+  return suggestions;
 }
