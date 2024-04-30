@@ -1,4 +1,4 @@
-import R from 'ramda';
+import * as ramda from 'ramda';
 import { doRequest, lookup, storeId } from './common';
 import { CATEGORY, COLLECTION } from './constants';
 
@@ -67,12 +67,12 @@ function processResults(opts: any) {
 }
 
 function validate(opts: any) {
-  if (opts.category && !R.includes(opts.category, R.values(CATEGORY))) {
+  if (opts.category && !ramda.includes(opts.category, ramda.values(CATEGORY))) {
     throw Error('Invalid category ' + opts.category);
   }
 
   opts.collection = opts.collection || COLLECTION.TOP_FREE_IOS;
-  if (!R.includes(opts.collection, R.values(COLLECTION))) {
+  if (!ramda.includes(opts.collection, ramda.values(COLLECTION))) {
     throw Error(`Invalid collection ${opts.collection}`);
   }
 
@@ -85,7 +85,7 @@ function validate(opts: any) {
 }
 
 export default async function list(opts: any) {
-  opts = R.clone(opts || {});
+  opts = ramda.clone(opts || {});
   validate(opts);
   const category = opts.category ? `/genre=${opts.category}` : '';
   const STORE_ID = storeId(opts.country);
