@@ -49,7 +49,7 @@ jobs:
       - name: Build 🔨
         run: yarn build
 
-      - name: Publish to npm 🚀
-        run: yarn npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish to NPM 🚀
+        uses: simenandre/publish-with-yarn-classic@v1
+        with:
+          npm-auth-token: ${{ secrets.NPM_TOKEN }}
