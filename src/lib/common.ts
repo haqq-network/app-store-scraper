@@ -7,12 +7,6 @@ export interface BaseOptions {
   requestOptions?: Record<string, string>;
 }
 
-export interface BaseOptions {
-  country?: string;
-  lang?: string;
-  requestOptions?: Record<string, string>;
-}
-
 export async function doRequest<R = unknown>(
   url: string | URL,
   headers: Record<string, string>,
