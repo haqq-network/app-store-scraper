@@ -2,14 +2,12 @@ name: Manual Release
 
 on:
   workflow_dispatch:
-    inputs:
-      releaseType:
-        description: 'Type of release (major, minor, patch)'
-        required: true
-        default: 'patch'
 
 env:
   HUSKY: 0
+
+permissions:
+  contents: read
 
 jobs:
   release:
@@ -47,7 +45,7 @@ jobs:
       #     git remote set-url origin https://${{ secrets.GITHUB_BOT_TOKEN }}@github.com/haqq-network/app-store-scraper.git
 
       - name: Release
-        run: yarn semantic-release --release-type ${{ github.event.inputs.releaseType }}
+        run: yarn semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
