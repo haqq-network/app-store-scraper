@@ -17,7 +17,7 @@
     "install:husky": "husky || true",
     "prepare": "yarn install:husky",
     "postinstall": "yarn prepare",
-    "prepack": "yarn pinst --disable",
+    "prepack": "yarn pinst --disable || yarn build",
     "postpack": "yarn pinst --enable"
   },
   "keywords": [
