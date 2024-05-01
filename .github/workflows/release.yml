@@ -36,5 +36,5 @@ jobs:
       - name: Release
         run: yarn semantic-release --ci --debug
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
