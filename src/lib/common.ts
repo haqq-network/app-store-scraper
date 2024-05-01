@@ -51,7 +51,6 @@ export async function doRequest(
       ...requestOptions,
     };
 
-    // Make the request using `got` library and await the response
     const { data }: any = await axios.get(url, options);
 
     // Check response status code

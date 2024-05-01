@@ -35,15 +35,6 @@ jobs:
       - name: Build package
         run: yarn build
 
-      - name: Print npm packed tarball info
-        run: npm pack --dry-run
-
-      # - name: Configure bot
-      #   run: |
-      #     git config user.name ${{ secrets.GITHUB_BOT_USERNAME }}
-      #     git config user.email ${{ secrets.GITHUB_BOT_EMAIL }}
-      #     git remote set-url origin https://${{ secrets.GITHUB_BOT_TOKEN }}@github.com/haqq-network/app-store-scraper.git
-
       - name: Release
         run: yarn semantic-release
         env:
