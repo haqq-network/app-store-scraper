@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/haqq-network/app-store-scraper/compare/v1.0.0...v1.1.0) (2024-05-01)
+
+
+### Features
+
+* new typescript version ([06eba35](https://github.com/haqq-network/app-store-scraper/commit/06eba35aab27af97eba0ef56a529242749bd8964))
+
 # 1.0.0 (2024-04-30)
 
 ### Bug Fixes
