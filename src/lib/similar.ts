@@ -1,50 +1,62 @@
-import app from './app';
-import { doRequest, lookup, storeId } from './common';
+import { app } from './app';
+import { BaseOptions, doRequest, storeId } from './common';
 import { BASE_ID_URL } from './constants';
+import { CleanedApp, lookup } from './lookup';
 
-export default async function similar(opts: any) {
+export interface SimilarOptions extends BaseOptions {
+  id?: number;
+  appId?: string;
+}
+
+export async function similar(opts: SimilarOptions): Promise<CleanedApp[]> {
   if (!opts.id && !opts.appId) {
-    throw new Error('Either id or appId is required');
+    throw new Error('Either "id" or "appId" is required.');
+  }
+
+  opts.country = opts.country || 'us';
+
+  const id =
+    opts.id ??
+    (await app(opts).then((details) => {
+      return details.id;
+    }));
+
+  const responseText = await doRequest<string>(
+    `${BASE_ID_URL}${id}`,
+    {
+      'X-Apple-Store-Front': `${storeId(opts.country)},32`,
+    },
+    opts.requestOptions,
+    'text',
+  );
+
+  if (!responseText) {
+    throw new Error('No response text.');
+  }
+
+  const match = /customersAlsoBoughtApps":(.*?\])/g.exec(responseText);
+
+  if (!match) {
+    throw new Error('No similar apps found.');
   }
 
   try {
-    let id;
+    const ids: string[] = JSON.parse(match[1]);
 
-    if (opts.id) {
-      id = opts.id;
-    } else {
-      const appDetails = await app(opts);
-      id = appDetails.id;
-    }
-
-    const response = await doRequest(
-      `${BASE_ID_URL}${id}`,
-      {
-        'X-Apple-Store-Front': `${storeId(opts.country)},32`,
-      },
-      opts.requestOptions,
-    );
-
-    const index = response.indexOf('customersAlsoBoughtApps');
-    if (index === -1) {
+    if (ids.length === 0) {
       return [];
     }
 
-    const regExp = /customersAlsoBoughtApps":(.*?\])/g;
-    const match = regExp.exec(response);
-    const ids = match ? JSON.parse(match[1]) : [];
-
-    const similarApps = await lookup(
+    return await lookup(
       ids,
       'id',
       opts.country,
       opts.lang,
       opts.requestOptions,
-      opts.throttle,
     );
-
-    return similarApps;
-  } catch (error) {
-    throw error; // Re-throw any caught error for consistent error propagation
+  } catch (error: unknown) {
+    throw new Error(
+      `Error parsing similar apps data: ${(error as Error).message}`,
+    );
   }
 }

@@ -1,114 +1,70 @@
-import axios from 'axios';
-import { DEFAULT_STORE, LOOKUP_URL, MARKET_CODES } from './constants';
+import { DEFAULT_STORE, MARKET_CODES } from './constants';
+import { parseString } from 'xml2js';
 
-export function cleanApp(app: any) {
-  return {
-    id: app.trackId,
-    appId: app.bundleId,
-    title: app.trackName,
-    url: app.trackViewUrl,
-    description: app.description,
-    icon: app.artworkUrl512 || app.artworkUrl100 || app.artworkUrl60,
-    genres: app.genres,
-    genreIds: app.genreIds,
-    primaryGenre: app.primaryGenreName,
-    primaryGenreId: app.primaryGenreId,
-    contentRating: app.contentAdvisoryRating,
-    languages: app.languageCodesISO2A,
-    size: app.fileSizeBytes,
-    requiredOsVersion: app.minimumOsVersion,
-    released: app.releaseDate,
-    updated: app.currentVersionReleaseDate || app.releaseDate,
-    releaseNotes: app.releaseNotes,
-    version: app.version,
-    price: app.price,
-    currency: app.currency,
-    free: app.price === 0,
-    developerId: app.artistId,
-    developer: app.artistName,
-    developerUrl: app.artistViewUrl,
-    developerWebsite: app.sellerUrl,
-    score: app.averageUserRating,
-    reviews: app.userRatingCount,
-    currentVersionScore: app.averageUserRatingForCurrentVersion,
-    currentVersionReviews: app.userRatingCountForCurrentVersion,
-    screenshots: app.screenshotUrls,
-    ipadScreenshots: app.ipadScreenshotUrls,
-    appletvScreenshots: app.appletvScreenshotUrls,
-    supportedDevices: app.supportedDevices,
-  };
+export interface BaseOptions {
+  country?: string;
+  lang?: string;
+  requestOptions?: Record<string, string>;
 }
 
-export async function doRequest(
-  url: string,
-  headers: Record<string, any>,
-  requestOptions: Record<string, any>,
-  limit?: number,
-): Promise<any> {
+export interface BaseOptions {
+  country?: string;
+  lang?: string;
+  requestOptions?: Record<string, string>;
+}
+
+export async function doRequest<R = unknown>(
+  url: string | URL,
+  headers: Record<string, string>,
+  requestOptions: Record<string, string> = {},
+  returnType: 'json' | 'text' = 'json',
+) {
   try {
-    const options = {
-      headers,
+    const options: RequestInit = {
+      headers: new Headers(headers),
       ...requestOptions,
     };
 
-    const { data }: any = await axios.get(url, options);
+    const response = await fetch(url, options);
+    console.log('doRequest', {
+      st: response.status,
+      data: response.headers.get('content-type'),
+    });
 
-    // Check response status code
-    if (data.statusCode >= 400) {
-      throw new Error('Request failed with status ' + data.statusCode);
+    if (response.status !== 200) {
+      throw new Error(`Request failed with status code ${response.status}`);
     }
 
-    // Request successful, return response body
-    console.log('Finished request');
-
-    return data;
+    if (returnType === 'text') {
+      return response.text() as unknown as Promise<R>;
+    } else {
+      return response.json() as Promise<R>;
+    }
   } catch (error) {
-    // Handle any errors during request
     console.error('Request error:', error);
-    throw error; // Rethrow the error to the caller
+    return null;
   }
 }
 
-export async function lookup(
-  ids: any,
-  idField: any,
-  country: any,
-  lang: any,
-  requestOptions: any,
-  limit: any,
-) {
-  idField = idField || 'id';
-  country = country || 'us';
-  const langParam = lang ? `&lang=${lang}` : '';
-  const joinedIds = ids.join(',');
-  const url = `${LOOKUP_URL}?${idField}=${joinedIds}&country=${country}&entity=software${langParam}`;
-
-  try {
-    const response = await doRequest(url, {}, requestOptions, limit);
-    // const parsedResponse = JSON.parse(response.results[0]);
-    const filteredResults = response.results.filter((app: any) => {
-      return (
-        typeof app.wrapperType === 'undefined' || app.wrapperType === 'software'
-      );
-    });
-    // console.log('AJSDJHGAJSHDHJ', { filteredResults });
-    const cleanedApps = filteredResults.map((app: any) => cleanApp(app));
-
-    return cleanedApps;
-  } catch (error: any) {
-    throw new Error(`Lookup failed: ${error.message}`);
-  }
-}
-
-export function storeId(countryCode: string): number | '143441' {
+export function storeId(countryCode: string) {
   const upperCaseCountryCode = countryCode.toUpperCase();
 
   // Check if countryCode exists in MARKET_CODES
   if (upperCaseCountryCode in MARKET_CODES) {
-    return MARKET_CODES[upperCaseCountryCode]; // Return corresponding store ID
+    return MARKET_CODES[upperCaseCountryCode].toString(); // Return corresponding store ID
   } else {
     return DEFAULT_STORE; // Return default store ID if countryCode not found
   }
 }
 
-export default { lookup, cleanApp, doRequest, storeId };
+export async function parseXML(string: string) {
+  return new Promise(function (resolve, reject) {
+    return parseString(string, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+}
