@@ -36,5 +36,7 @@ jobs:
       - name: Release
         run: yarn semantic-release --ci --debug
         env:
+          # GIT_AUTHOR_NAME: haqq-ci
+          GIT_AUTHOR_EMAIL: haqq-ci@haqq.network
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
