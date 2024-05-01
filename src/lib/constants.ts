@@ -1,4 +1,4 @@
-export const COLLECTION = {
+export const COLLECTION: Record<string, string> = {
   TOP_MAC: 'topmacapps',
   TOP_FREE_MAC: 'topfreemacapps',
   TOP_GROSSING_MAC: 'topgrossingmacapps',
@@ -14,7 +14,7 @@ export const COLLECTION = {
   TOP_PAID_IPAD: 'toppaidipadapplications',
 };
 
-export const CATEGORY = {
+export const CATEGORY: Record<string, number> = {
   BOOKS: 6018,
   BUSINESS: 6000,
   CATALOGS: 6022,
@@ -216,8 +216,8 @@ export const MARKET_CODES: Record<string, number> = {
   YE: 143571,
 };
 
-export const DEFAULT_STORE = '143441';
-export const LOOKUP_URL = 'https://itunes.apple.com/lookup';
-export const BASE_ID_URL = 'https://itunes.apple.com/us/app/app/id';
+export const DEFAULT_STORE = '143441' as const;
+export const LOOKUP_URL = 'https://itunes.apple.com/lookup' as const;
+export const BASE_ID_URL = 'https://itunes.apple.com/us/app/app/id' as const;
 export const BASE_URL =
-  'https://search.itunes.apple.com/WebObjects/MZSearchHints.woa/wa/hints?clientApplication=Software&term=';
+  'https://search.itunes.apple.com/WebObjects/MZSearchHints.woa/wa/hints?clientApplication=Software&term=' as const;

@@ -1,13 +1,17 @@
-import { DeveloperOptions } from '../../types';
-import { lookup } from './common';
+import { BaseOptions } from './common';
+import { CleanedApp, lookup } from './lookup';
 
-export default async function developer(opts: DeveloperOptions) {
+export interface DeveloperOptions extends BaseOptions {
+  devId: number;
+}
+
+export async function developer(opts: DeveloperOptions): Promise<CleanedApp[]> {
   if (!opts.devId) {
     throw new Error('devId is required');
   }
 
   const results = await lookup(
-    [opts.devId],
+    [opts.devId.toString()],
     'id',
     opts.country,
     opts.lang,

@@ -1,54 +1,86 @@
-import * as R from 'ramda';
-import { BASE_URL } from './constants';
-import { doRequest, lookup, storeId } from './common';
-import { SearchOptions } from '../../types';
+import { BaseOptions, doRequest, storeId } from './common';
+import { CleanedApp, lookup } from './lookup';
 
-function paginate(num: number, page: number) {
-  num = num || 50;
-  page = page - 1 || 0;
-  const pageStart = num * page;
-  const pageEnd = pageStart + num;
+const BASE_URL =
+  'https://search.itunes.apple.com/WebObjects/MZStore.woa/wa/search?clientApplication=Software&media=software&term=';
 
-  return R.slice(pageStart, pageEnd);
+export interface SearchOptions extends BaseOptions {
+  term: string;
+  num?: number;
+  page?: number;
+  idsOnly?: boolean;
 }
 
-export default async function search(opts: SearchOptions) {
-  return new Promise(function (resolve, reject) {
-    if (!opts.term) {
-      throw Error('term is required');
-    }
-    const url = BASE_URL + encodeURIComponent(opts.term);
-    const STORE_ID = storeId(opts.country);
-    const lang = opts.lang || 'en-us';
+interface SearchResult {
+  type: number;
+  id: string;
+  entity: string;
+}
 
-    doRequest(
+interface ResponseBubble {
+  results: SearchResult[];
+}
+
+interface SearchResponse {
+  bubbles: ResponseBubble[];
+}
+
+function paginate<T>(items: T[], num: number = 50, page: number = 1): T[] {
+  const pageIndex = page - 1;
+  const pageStart = num * pageIndex;
+  const pageEnd = pageStart + num;
+  return items.slice(pageStart, pageEnd);
+}
+
+export async function search(
+  opts: SearchOptions,
+): Promise<string[] | CleanedApp[]> {
+  if (!opts.term) {
+    throw new Error('Term is required');
+  }
+
+  opts.country = opts.country || 'us';
+
+  const url = `${BASE_URL}${encodeURIComponent(opts.term)}`;
+  const STORE_ID = storeId(opts.country);
+  const lang = opts.lang || 'en-us';
+  const headers = {
+    'X-Apple-Store-Front': `${STORE_ID},24 t:native`,
+    'Accept-Language': lang,
+    Accept: 'application/json',
+  };
+
+  try {
+    const response = await doRequest<SearchResponse>(
       url,
-      {
-        'X-Apple-Store-Front': `${STORE_ID},24 t:native`,
-        'Accept-Language': lang,
-      },
+      headers,
       opts.requestOptions,
-    )
-      .then(JSON.parse)
-      .then(
-        (response) =>
-          (response.bubbles[0] && response.bubbles[0].results) || [],
-      )
-      .then(paginate(opts.num, opts.page))
-      .then(R.pluck('id'))
-      .then((ids) => {
-        if (!opts.idsOnly) {
-          return lookup(
-            ids,
-            'id',
-            opts.country,
-            opts.lang,
-            opts.requestOptions,
-          );
-        }
-        return ids;
-      })
-      .then(resolve)
-      .catch(reject);
-  });
+    );
+
+    if (!response) {
+      throw new Error('No results found');
+    }
+
+    const items = response.bubbles[0]?.results || [];
+    const paginatedItems = paginate(items, opts.num, opts.page);
+    const ids = paginatedItems.map((item) => {
+      return item.id;
+    });
+
+    if (!opts.idsOnly) {
+      return await lookup(
+        ids,
+        'id',
+        opts.country,
+        opts.lang,
+        opts.requestOptions,
+      );
+    }
+
+    return ids;
+  } catch (error: unknown) {
+    throw new Error(
+      `Error fetching search results: ${(error as Error).message}`,
+    );
+  }
 }
