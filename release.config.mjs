@@ -13,5 +13,6 @@ export default {
           'chore(release): ${nextRelease.version}\n\n${nextRelease.notes}\n\n[skip ci]',
       },
     ],
+    '@semantic-release/github',
   ],
 };
