@@ -20,10 +20,6 @@ export async function doRequest<R = unknown>(
     };
 
     const response = await fetch(url, options);
-    console.log('doRequest', {
-      st: response.status,
-      data: response.headers.get('content-type'),
-    });
 
     if (response.status !== 200) {
       throw new Error(`Request failed with status code ${response.status}`);
