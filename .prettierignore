@@ -1,3 +1,7 @@
 .old_tests
 .yarn
 .yarnrc.yml
+dist/
+pnpm-lock.yaml
+.parcel-cache/
+node_modules/

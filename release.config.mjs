@@ -7,7 +7,9 @@ export default {
       '@semantic-release/release-notes-generator',
       { preset: 'conventionalcommits' },
     ],
-    '@semantic-release/changelog',
+
+    ['@semantic-release/exec', { prepareCmd: 'pnpm build && pnpm format' }],
+    ['@semantic-release/changelog'],
     ['@semantic-release/npm'],
     [
       '@semantic-release/git',
@@ -17,6 +19,6 @@ export default {
           'chore(release): ${nextRelease.version}\n\n${nextRelease.notes}\n\n[skip ci]',
       },
     ],
-    '@semantic-release/github',
+    ['@semantic-release/github'],
   ],
 };
