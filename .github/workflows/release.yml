@@ -18,27 +18,24 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - name: Checkout the repo
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
-          # persist-credentials: false
-
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: 'yarn'
-
+          cache: pnpm
       - name: Install dependencies
-        run: yarn install --immutable
-
+        run: pnpm install --frozen-lockfile
       - name: Build package
-        run: yarn build
-
+        run: pnpm build
       - name: Release
-        run: yarn semantic-release --ci --debug
+        run: pnpm exec semantic-release --ci --debug
         env:
           GIT_AUTHOR_NAME: haqq-ci
           GIT_AUTHOR_EMAIL: haqq-ci@haqq.network

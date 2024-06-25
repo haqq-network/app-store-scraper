@@ -1,4 +1,4 @@
-# app-store-scraper
+# @haqq/app-store-scraper
 
 Node.js module to scrape application data from the iTunes/Mac App Store.
 The goal is to provide an interface as close as possible to the
@@ -38,7 +38,7 @@ Retrieves the full detail of an application. Options:
 Example:
 
 ```javascript
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store.app({ id: 553834731 }).then(console.log).catch(console.log);
 ```
@@ -91,7 +91,7 @@ Results:
 Example with `ratings` option:
 
 ```javascript
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store
   .app({ id: 553834731, ratings: true })
@@ -135,7 +135,7 @@ Retrieves a list of applications from one of the collections at iTunes. Options:
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store
   .list({
@@ -205,7 +205,7 @@ Retrieves a list of apps that results of searching by the given term. Options:
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store
   .search({
@@ -248,7 +248,7 @@ Retrieves a list of applications by the give developer id. Options:
 Example:
 
 ```javascript
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store.developer({ devId: 284882218 }).then(console.log).catch(console.log);
 ```
@@ -280,7 +280,7 @@ Retrieves the ratings for the app. Currently only for US App Store. Options:
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store
   .privacy({
@@ -327,7 +327,7 @@ to `10000` for the most searched terms.
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store.suggest({ term: 'panda' }).then(console.log).catch(console.log);
 ```
@@ -356,7 +356,7 @@ Returns the list of "customers also bought" apps shown in the app's detail page.
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store.similar({ id: 553834731 }).then(console.log).catch(console.log);
 ```
@@ -394,7 +394,7 @@ Retrieves a page of reviews for the app. Options:
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store
   .reviews({
@@ -442,7 +442,7 @@ Retrieves the ratings for the app. Options:
 Example:
 
 ```js
-var store = require('app-store-scraper');
+var store = require('@haqq/app-store-scraper');
 
 store
   .ratings({
@@ -475,7 +475,7 @@ to avoid requesting the same data twice. The `memoized` function returns the
 store object that caches its results:
 
 ```javascript
-var store = require('app-store-scraper'); // regular non caching version
+var store = require('@haqq/app-store-scraper'); // regular non caching version
 var memoized = require('app-store-scraper').memoized(); // cache with default options
 var memoizedCustom = require('app-store-scraper').memoized({
   maxAge: 1000 * 60,
