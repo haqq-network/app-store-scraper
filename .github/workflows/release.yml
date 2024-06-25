@@ -32,8 +32,6 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build package
-        run: pnpm build
       - name: Release
         run: pnpm exec semantic-release --ci --debug
         env:
