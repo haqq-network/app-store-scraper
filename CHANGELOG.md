@@ -1,3 +1,9 @@
+## [1.1.2](https://github.com/haqq-network/app-store-scraper/compare/v1.1.1...v1.1.2) (2024-06-25)
+
+### Bug Fixes
+
+* remove unnecessary log ([c03270c](https://github.com/haqq-network/app-store-scraper/commit/c03270c92d802b1603883de2e8301efce3753e6e))
+
 ## [1.1.1](https://github.com/haqq-network/app-store-scraper/compare/v1.1.0...v1.1.1) (2024-05-07)
 
 ### Bug Fixes
